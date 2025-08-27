@@ -1,6 +1,9 @@
 ﻿
 -- Ejercicio 3 - Table per Concrete Class (TPC)
 
+-- a- Crear la base para el ejercicio 3
+
+
 USE master;
 
 GO
@@ -17,61 +20,89 @@ USE GUIA5_1_Ejercicio3_DB;
 
 GO
 
+-- b- Crear las tablas
+
 CREATE TABLE Rectangulos(
-	Id INT PRIMARY KEY IDENTITY(1,1),	
+	Id INT IDENTITY,	
 	Area DECIMAL(18, 2),
-	Ancho DECIMAL(18,2), 
-	Largo DECIMAL(18,2),
-	Radio DECIMAL(18,2)
+	Ancho DECIMAL(18,2) NOT NULL, 
+	Largo DECIMAL(18,2) NOT NULL,
+	CONSTRAINT PK_Rectangulos PRIMARY KEY (Id)
 );
 
 CREATE TABLE Circulos(
-	Id INT PRIMARY KEY IDENTITY(1,1),	
+	Id INT IDENTITY,	
 	Area DECIMAL(18, 2),
-	Ancho DECIMAL(18,2), 
-	Largo DECIMAL(18,2),
-	Radio DECIMAL(18,2)
+	Radio DECIMAL(18,2) NOT NULL,
+	CONSTRAINT PK_Circulos PRIMARY KEY (Id)
 );
 
 GO
 
-INSERT INTO Figuras(Tipo, Ancho, Largo, Radio) 
+
+-- c- Insertar figuras como ejemplo y consulta de las Figuras
+
+INSERT INTO Rectangulos(Ancho, Largo)
 VALUES
-(1, 1,    1,    NULL),
-(1, 1,    2,    NULL),
-(2, NULL, NULL, 1),
-(1, 2.2,    1,    NULL),
-(2, NULL, NULL, 2.1)
+(1,    1),
+(1,    2),
+(2.2,    1);
+
+INSERT INTO Circulos(Radio)
+VALUES
+(1),
+(2.1);
+
+
+SELECT ROW_NUMBER() OVER (ORDER BY Tipo) as Numero,
+	   f.Tipo,
+	   f.Area,
+	   f.Ancho,
+	   f.Largo,
+	   f.Radio
+FROM (
+	SELECT 'Rectangulo' AS Tipo, 
+	       r.Id AS Id_Rectangulo,  r.Area, r.Ancho, r.Largo, 
+	       NULL AS Id_Circulo,  NULL AS Radio
+	FROM Rectangulos r
+	UNION 
+	SELECT 'Circulo' AS Tipo, 
+	        NULL AS Id_Rectanculo,  NULL AS Area, NULL AS Ancho, NULL AS Largo,
+			c.Id AS Id_Circulo, c.Radio AS Radio
+	FROM Circulos c
+) AS f
 
 GO
 
-CREATE PROCEDURE CalcularArea
+-- d- Crear procedimiento para calcular el área de una figura por Id
+
+CREATE PROCEDURE CalcularAreaRectangulo
 (
   @Id INT
 )
 AS
 BEGIN
-	UPDATE Figuras 
-	SET
-		Area = CASE 
-					WHEN Tipo=1 THEN Ancho*Largo	
-					WHEN Tipo=2 THEN 3.14*power( Radio, 2) 
-					ELSE NULL
-			   END
-	WHERE Id=@Id;
+
+	UPDATE Rectangulos SET Area=Ancho*Largo WHERE Id=@Id;
+	
 END
 
 GO
 
-EXEC CalcularArea 1
+CREATE PROCEDURE CalcularAreaCirculo
+(
+  @Id INT
+)
+AS
+BEGIN
 
-EXEC CalcularArea 3
-
-SELECT * 
-FROM Figuras 
-WHERE Id IN (1, 3)
+	UPDATE Circulos SET  Area=3.14*POWER( Radio, 2) WHERE Id=@Id;
+	
+END
 
 GO
+
+-- f- Calcular el area de todas las figuras (Cursor)
 
 DECLARE Figura_CURSOR CURSOR FOR SELECT f.Id, f.Tipo, f.Ancho, f.Largo, f.Radio FROM Figuras f;
 
@@ -96,7 +127,15 @@ DEALLOCATE Figura_CURSOR;
 
 GO
 
-SELECT * FROM Figuras;
+SELECT f.Id,
+	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
+			WHEN f.Tipo=2 THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   f.Ancho,
+	   f.Largo,
+	   f.Radio
+FROM Figuras f
 
 USE master
 

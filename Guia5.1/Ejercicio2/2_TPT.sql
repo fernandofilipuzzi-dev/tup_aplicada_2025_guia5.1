@@ -2,6 +2,9 @@
 
 -- Ejercicio 2 - Table per Type (TPT)
 
+
+-- a- Crear la base para el ejercicio 2
+
 USE master;
 
 GO
@@ -17,6 +20,8 @@ GO
 USE GUIA5_1_Ejercicio2_DB;
 
 GO
+
+-- b- Crear las tablas
 
 CREATE TABLE Figuras(
 	Id INT IDENTITY(1,1),	
@@ -41,7 +46,7 @@ CREATE TABLE Circulos(
 
 GO
 
--- Insertar un circulo
+-- c- Procedimientos para insertar figuras (Rectangulo y circulo)
 
 CREATE PROCEDURE sp_InsertarRectangulo
 (
@@ -59,7 +64,6 @@ END
 
 GO
 
-
 CREATE PROCEDURE sp_InsertarCirculo
 (
 	@Radio DECIMAL(18,2)
@@ -75,22 +79,31 @@ END
 
 GO
 
-EXEC sp_InsertarRectangulo 1, 1
-EXEC sp_InsertarRectangulo 1, 2
-EXEC sp_InsertarCirculo 1
-EXEC sp_InsertarRectangulo 2.2, 1
-EXEC sp_InsertarCirculo 2.1
+-- d- Insertar figuras como ejemplo y consulta de las Figuras
+
+EXEC sp_InsertarRectangulo @Ancho=1, @Largo=1
+EXEC sp_InsertarRectangulo @Ancho=1, @Largo=2
+EXEC sp_InsertarCirculo @Radio=1
+EXEC sp_InsertarRectangulo @Ancho=2.2, @Largo=1
+EXEC sp_InsertarCirculo @Radio=2.1
 
 GO
 
-SELECT * 
+SELECT f.Id,
+	   CASE WHEN r.Id IS NOT NULL THEN 'Rectangulo'
+			WHEN c.Id IS NOT NULL THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   r.Ancho,
+	   r.Largo,
+	   c.Radio
 FROM Figuras f
 LEFT JOIN Rectangulos r ON r.Id = f.Id
 LEFT JOIN Circulos c ON c.Id = f.Id
-WHERE f.Id IN (1, 2)
 
 GO
 
+-- e- Crear procedimiento para calcular el área de una figura por Id
 
 CREATE PROCEDURE CalcularArea
 (
@@ -115,6 +128,7 @@ END
 
 GO
 
+-- f- Calcular el area de todas las figuras (Cursor)
 
 DECLARE Figura_CURSOR CURSOR FOR SELECT f.Id FROM Figuras f;
 
@@ -136,10 +150,19 @@ DEALLOCATE Figura_CURSOR;
 
 GO
 
-SELECT * 
+-- g- Consultar todas las figuras con sus áreas calculadas
+
+SELECT f.Id,
+	   CASE WHEN r.Id IS NOT NULL THEN 'Rectangulo'
+			WHEN c.Id IS NOT NULL THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   r.Ancho,
+	   r.Largo,
+	   c.Radio
 FROM Figuras f
 LEFT JOIN Rectangulos r ON r.Id = f.Id
-LEFT JOIN Circulos c ON c.Id = f.Id
+LEFT JOIN Circulos c ON c.Id = f.Id;
 
 USE master
 

@@ -60,8 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="1_TPH.sql" />
-    <None Include="Readme.md" />
-    <None Include="Docs\Ejercicio1.uml" />
+    <None Include="Docs\Readme.md" />
+    <None Include="Docs\consulta_2.png" />
+    <None Include="Docs\consulta_1.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="2_over.sql" />

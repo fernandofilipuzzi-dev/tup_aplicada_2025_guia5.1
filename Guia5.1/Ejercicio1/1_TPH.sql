@@ -2,6 +2,9 @@
 
 -- Ejercicio 1 - Table Per Hierarchy (TPH)
 
+
+-- a- Crear la base para el ejercicio 1
+
 USE master;
 
 GO
@@ -18,6 +21,8 @@ USE GUIA5_1_Ejercicio1_DB;
 
 GO
 
+-- b- Crear las tablas
+
 CREATE TABLE Figuras(
 	Id INT PRIMARY KEY IDENTITY(1,1),	
 	Tipo INT NOT NULL,
@@ -29,6 +34,8 @@ CREATE TABLE Figuras(
 
 GO
 
+-- c- Insertar figuras como ejemplo
+
 INSERT INTO Figuras(Tipo, Ancho, Largo, Radio) 
 VALUES
 (1, 1,    1,    NULL),
@@ -38,6 +45,8 @@ VALUES
 (2, NULL, NULL, 2.1)
 
 GO
+
+-- d- Crear procedimiento para calcular el área de una figura por Id
 
 CREATE PROCEDURE CalcularArea
 (
@@ -57,17 +66,29 @@ END
 
 GO
 
+-- e- Calcular el area de un rectangulo y un circulo previamente insertados
+
 EXEC CalcularArea 1
 
 EXEC CalcularArea 3
 
-SELECT * 
-FROM Figuras 
-WHERE Id IN (1, 3)
+SELECT f.Id,
+	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
+			WHEN f.Tipo=2 THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   f.Ancho,
+	   f.Largo,
+	   f.Radio
+FROM Figuras f
+WHERE f.Id IN (1, 3);
 
 GO
 
-DECLARE Figura_CURSOR CURSOR FOR SELECT f.Id, f.Tipo, f.Ancho, f.Largo, f.Radio FROM Figuras f;
+-- f- Calcular el area de todas las figuras (Cursor)
+
+
+DECLARE Figura_CURSOR CURSOR FOR SELECT f.Id FROM Figuras f;
 
 OPEN Figura_CURSOR;
 
@@ -90,7 +111,17 @@ DEALLOCATE Figura_CURSOR;
 
 GO
 
-SELECT * FROM Figuras;
+-- g- Consultar todas las figuras con sus áreas calculadas
+
+SELECT f.Id,
+	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
+			WHEN f.Tipo=2 THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   f.Ancho,
+	   f.Largo,
+	   f.Radio
+FROM Figuras f;
 
 USE master
 
