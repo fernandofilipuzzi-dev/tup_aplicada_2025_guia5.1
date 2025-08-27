@@ -55,11 +55,25 @@ CREATE PROCEDURE sp_InsertarRectangulo
 )
 AS
 BEGIN
-	INSERT INTO Figuras(Area) 
-	VALUES (0);
-	DECLARE @Id_Figura INT = SCOPE_IDENTITY();
-	INSERT INTO Rectangulos(Id, Ancho, Largo)
-	VALUES (@Id_Figura, @Ancho, @Largo);
+
+	BEGIN TRANSACTION;
+
+	BEGIN TRY;
+
+		INSERT INTO Figuras(Area) 
+		VALUES (0);
+	
+		DECLARE @Id_Figura INT = SCOPE_IDENTITY();
+	
+		INSERT INTO Rectangulos(Id, Ancho, Largo)
+		VALUES (@Id_Figura, @Ancho, @Largo);
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH;
+		ROLLBACK TRANSACTION;
+	END CATCH;
+
 END
 
 GO
