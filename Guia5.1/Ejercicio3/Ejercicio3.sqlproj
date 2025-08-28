@@ -59,9 +59,15 @@
     <Folder Include="Docs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="3_TPC.sql" />
+    <None Include="1_TPC.sql" />
     <None Include="Docs\Readme.md" />
     <None Include="Docs\consulta_1.png" />
     <None Include="Docs\consulta_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="2_vista_create.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3_vista_consulta.sql" />
   </ItemGroup>
 </Project>

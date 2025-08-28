@@ -102,7 +102,7 @@ END
 
 GO
 
--- f- Calcular el area de todas las figuras (Cursor)
+-- e- Calcular el area de todas las figuras (Cursor)
 
 DECLARE Figura_CURSOR CURSOR FOR SELECT f.Id, f.Tipo, f.Ancho, f.Largo, f.Radio FROM Figuras f;
 
@@ -127,15 +127,28 @@ DEALLOCATE Figura_CURSOR;
 
 GO
 
-SELECT f.Id,
-	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
-			WHEN f.Tipo=2 THEN 'Circulo'
-	   ELSE 'Desconocido' END AS Tipo,
+-- f- Consultar todas las figuras con sus áreas calculadas
+
+SELECT ROW_NUMBER() OVER (ORDER BY Tipo) as Numero,
+	   f.Tipo,
 	   f.Area,
 	   f.Ancho,
 	   f.Largo,
 	   f.Radio
-FROM Figuras f
+FROM (
+	SELECT 'Rectangulo' AS Tipo, 
+	       r.Id AS Id_Rectangulo,  r.Area, r.Ancho, r.Largo, 
+	       NULL AS Id_Circulo,  NULL AS Radio
+	FROM Rectangulos r
+	UNION 
+	SELECT 'Circulo' AS Tipo, 
+	        NULL AS Id_Rectanculo,  NULL AS Area, NULL AS Ancho, NULL AS Largo,
+			c.Id AS Id_Circulo, c.Radio AS Radio
+	FROM Circulos c
+) AS f
+
+GO
+
 
 USE master
 

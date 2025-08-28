@@ -84,24 +84,37 @@ CREATE PROCEDURE sp_InsertarCirculo
 )
 AS
 BEGIN
+
+	BEGIN TRANSACTION;
+
+	BEGIN TRY;
+
 	INSERT INTO Figuras(Area) 
 	VALUES (0);
+
 	DECLARE @Id_Figura INT = SCOPE_IDENTITY();
+
 	INSERT INTO Circulos(Id, Radio)
 	VALUES (@Id_Figura, @Radio);
+	
+	COMMIT TRANSACTION;
+	
+	END TRY
+	BEGIN CATCH;
+		ROLLBACK TRANSACTION;
+	END CATCH;
+
 END
 
 GO
 
 -- d- Insertar figuras como ejemplo y consulta de las Figuras
 
-EXEC sp_InsertarRectangulo @Ancho=1, @Largo=1
-EXEC sp_InsertarRectangulo @Ancho=1, @Largo=2
-EXEC sp_InsertarCirculo @Radio=1
-EXEC sp_InsertarRectangulo @Ancho=2.2, @Largo=1
-EXEC sp_InsertarCirculo @Radio=2.1
-
-GO
+EXEC sp_InsertarRectangulo @Ancho=1, @Largo=1;
+EXEC sp_InsertarRectangulo @Ancho=1, @Largo=2;
+EXEC sp_InsertarCirculo @Radio=1;
+EXEC sp_InsertarRectangulo @Ancho=2.2, @Largo=1;
+EXEC sp_InsertarCirculo @Radio=2.1;
 
 SELECT f.Id,
 	   CASE WHEN r.Id IS NOT NULL THEN 'Rectangulo'

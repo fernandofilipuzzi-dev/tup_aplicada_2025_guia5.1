@@ -42,13 +42,26 @@ VALUES
 (1, 1,    2,    NULL),
 (2, NULL, NULL, 1),
 (1, 2.2,    1,    NULL),
-(2, NULL, NULL, 2.1)
+(2, NULL, NULL, 2.1);
+
+
+
+SELECT f.Id,
+	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
+			WHEN f.Tipo=2 THEN 'Circulo'
+	   ELSE 'Desconocido' END AS Tipo,
+	   f.Area,
+	   f.Ancho,
+	   f.Largo,
+	   f.Radio
+FROM Figuras f;
+
 
 GO
 
--- d- Crear procedimiento para calcular el área de una figura por Id
+-- d- Crear un  procedimiento para calcular el área de una figura por Id
 
-CREATE PROCEDURE CalcularArea
+CREATE PROCEDURE sp_CalcularArea
 (
   @Id INT
 )
@@ -68,9 +81,9 @@ GO
 
 -- e- Calcular el area de un rectangulo y un circulo previamente insertados
 
-EXEC CalcularArea 1
+EXEC sp_CalcularArea 1
 
-EXEC CalcularArea 3
+EXEC sp_CalcularArea 3
 
 SELECT f.Id,
 	   CASE WHEN f.Tipo=1 THEN 'Rectangulo'
