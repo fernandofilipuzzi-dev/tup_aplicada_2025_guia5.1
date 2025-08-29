@@ -111,10 +111,11 @@ FETCH NEXT FROM Figura_CURSOR INTO @Id;
 WHILE @@FETCH_STATUS = 0 
 BEGIN
 	
-	EXEC CalcularArea @Id;
+	EXEC sp_CalcularArea @Id;
 
 	PRINT @Id
 
+    --entrar en bucle
 	FETCH NEXT FROM Figura_CURSOR INTO @Id;
 END
 
